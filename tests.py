@@ -81,7 +81,7 @@ def test_solve():
             t_vec.append(t)
             u_vec.append(invFourier2D(u_four))
 
-    g = lambda x,y: np.exp(np.sin(7 * np.pi * x) + np.sin(7 * np.pi * y))
+    g = lambda x,y: np.exp(np.sin(11 * np.pi * x) + np.sin(11 * np.pi * y))
     bx = lambda x, y: np.sin(2 * np.pi * y)  # 3 is nice setting for the test
     by = lambda x, y: -np.sin(2 * np.pi * x)
     f  = lambda x, y: np.sin(np.pi * 2 * x * y)
@@ -94,6 +94,10 @@ def test_solve():
     plt.figure(figsize=(20,20))
     plot_2d([discretize(g, K)] + u_vec, vmin=0., vmax=7., cmap="inferno")
     
+
+def test_plot_2d():
+    Kx, Ky = get_freq(10)
+    plot_2d([Kx, Ky])
 
 
 

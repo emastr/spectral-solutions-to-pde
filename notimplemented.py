@@ -22,28 +22,37 @@ def euler_solve(u0: MAT, L: MAT, b: Callable[[MAT], MAT],
     as input, and that is called in each step. It can be used to 
     for example store the intermediate solutions at earlier times.
     """
-    raise NotImplementedError("STUDENTS NEEDED")
+    
+    dt = T/N
+    un = u0
+    for i in range(0, N):
+        un = euler_step(un,L,b,dt)
+        if callback is not None:
+            callback(un, i * dt, i)
+    return un
 
 
 def euler_step(u: MAT, L: MAT, b: Callable[[MAT], MAT], dt: float) -> MAT:
     """One step of the Euler Backwards method. u is a matrix,
     L is a matrix, b is a matrix valued function of u, dt is the step size."""
-    raise NotImplementedError("STUDENTS NEEDED")
+    HL = dt*b(u)+u
+    return HL/(1-dt*L)
 
 
 def get_L(Kx: MAT, Ky: MAT, lam: float) -> MAT:
     """Return the Laplace operator L*u = lam * (du/dx^2 + du/dy^2),
     represented as a matrix (frequency domain) with same dimensions as the fourier coefficients Kx and Ky.
     To evaluate the Laplace operator in the real domain, use invFourier2D(L * fourier2D(u))."""
-    raise NotImplementedError("STUDENTS NEEDED")
+    return lam*(Kx**2 + Ky**2)
 
 
 def get_b(u_four: MAT, f_four: MAT, bx_real: MAT, by_real: MAT, Kx: MAT, Ky: MAT) -> MAT:
     """Return the fourier coefficients of f - (bx, by) dot grad(u),
      for a grid of size n x n. f_four is the fourier coefficients of f,
     bx_real and by_real are the real space values of bx and by, and 
-    Kx and Ky are the fourier frequencies."""
-    raise NotImplementedError("STUDENTS NEEDED")
+    Kx and Ky are the fourier frequencies."""    
+    bhat = fourier2D(invFourier2D(Kx*u_four)*bx_real) + fourier2D(invFourier2D(Ky*u_four)*by_real)
+    return f_four - bhat
     
     
 def solve(u0: Callable[[MAT, MAT], MAT], f: Callable[[MAT, MAT], MAT], 
@@ -53,7 +62,18 @@ def solve(u0: Callable[[MAT, MAT], MAT], f: Callable[[MAT, MAT], MAT],
     with initial condition u(0) = u0. f is a function of u, T is the final time.
     N is the number of time steps and K is the number of Fourier bases.
     """
-    raise NotImplementedError("STUDENTS NEEDED")
+        
+    fn = discretize(f, K)
+    u0n = discretize(u0, K)
+    u_four = fourier2D(u0n)
+    f_four = fourier2D(fn)
+    bx = discretize(bx, K)
+    by = discretize(by, K)
+    Kx, Ky = get_freq(K)
+    L = get_L(Kx, Ky, lam)
+    b = lambda u: get_b(u, f_four, bx, by, Kx, Ky)
+
+    return euler_solve(u_four, L, b, N, T, callback=callback)
 
 
 
@@ -62,4 +82,9 @@ def plot_2d(f_list: List[MAT], **kwargs):
      kwargs are arguments (for example: linewidth=1.0, color='red'),
      passed on to plt.imshow (plt.imshow([], **kwargs)). 
      The functions are plotted in a grid."""
-    raise NotImplementedError("STUDENTS NEEDED")
+    length = np.math.ceil(np.sqrt(len(f_list)))
+    for i in range(len(f_list)):
+        plt.subplot(length, length, i+1)
+        plt.imshow(f_list[i])
+
+    plt.show()
