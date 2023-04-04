@@ -6,7 +6,11 @@ $$
  \partial_t u - \lambda \Delta u + \overline{b}\cdot \nabla u = f
 $$
 
-På en periodisk domän $[0,1]^2$.
+På en periodisk domän $[0,1]^2$. Vi kommer använda en implicit-explicit bakåt Euler metod som följande:
+
+$$
+  u_{n+1} - \Delta t \lambda \Delta u_{n+1} = u_n + \Delta t(f_n - \overline{b}_n\cdot \nabla u_n)
+$$
 
  Kurs SF1693, vi undersöker en spektral metod för att lösa transport + diffusion.
  Välj en funktion och implementera. Pusha sedan koden till github efter att ni har testat att den funkar!
